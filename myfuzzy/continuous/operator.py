@@ -276,7 +276,7 @@ class CoNormOperator(NormOperator):
 
 
 class CoNorm4(CoNormOperator):
-    def calc_z(self, x, y):
+    def calc(self, x, y):
         a = self.func_x.calc(x)
         b = self.func_y.calc(y)
         return a + b - a * b
@@ -286,7 +286,7 @@ class CoNorm4(CoNormOperator):
 
 
 class CoNorm9(CoNormOperator):
-    def calc_z(self, x, y):
+    def calc(self, x, y):
         a = self.func_x.calc(x)
         b = self.func_y.calc(y)
         return max(a, b)
