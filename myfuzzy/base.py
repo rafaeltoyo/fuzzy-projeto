@@ -5,6 +5,7 @@
 
 from numpy import linspace
 from matplotlib import pyplot as plt
+from matplotlib.pyplot import Figure
 
 from myfuzzy.function import MembershipFunc
 
@@ -41,6 +42,7 @@ class Domain(object):
     def __iter__(self):
         for x in self.points:
             yield x
+
 
 # ==================================================================================================================== #
 #   FuzzyUniverse
@@ -90,8 +92,10 @@ class FuzzyUniverse(dict):
     def plot(self, vars=None, figure=None):
         """
         Plotar o universo pela biblioteca 'matplotlib'
-        :param vars:
+        :param vars: Filtro do plot
+        :type vars: str|list
         :param figure:
+        :type figure: Figure
         :return:
         """
         if figure is None:
@@ -100,7 +104,8 @@ class FuzzyUniverse(dict):
         axes = figure.add_subplot(111)
 
         for label in self.__iter__():
-            if not isinstance(vars, list) or label in vars:
+            # filter? (vars can be str or list)
+            if vars is None or (isinstance(vars, str) and label == vars) or (isinstance(vars, list) and label in vars):
                 axes.plot(self.domain.points, self[label].gen(), label=label)
 
         axes.legend()
