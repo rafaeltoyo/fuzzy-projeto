@@ -4,10 +4,11 @@
 # ==================================================================================================================== #
 
 from numpy import linspace
+
 from matplotlib import pyplot as plt
 from matplotlib.pyplot import Figure
 
-from myfuzzy.function import MembershipFunc
+from fuzzychan.function import MembershipFunc
 
 
 # ==================================================================================================================== #
@@ -88,6 +89,14 @@ class FuzzyUniverse(dict):
         if not isinstance(value, FuzzySet):
             raise TypeError("FuzzyUniverse dict only accept instance of 'FuzzySet'")
         super(FuzzyUniverse, self).__setitem__(key, value)
+
+    def __getitem__(self, item):
+        """
+
+        :param item:
+        :return: FuzzySet
+        """
+        return super(FuzzyUniverse, self).__getitem__(item)
 
     def plot(self, vars=None, figure=None):
         """

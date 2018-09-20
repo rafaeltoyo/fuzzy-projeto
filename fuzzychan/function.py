@@ -61,43 +61,54 @@ class MembershipFunc(object):
 
         if 'inv' in kwargs.keys() and kwargs['inv'] == 'true':
             # INVERSE OPERATION
+            return self.inv(float(kwargs['mi']))
 
-            # Get 'mi' value
-            mi = float(kwargs['mi'])
-            if kind == 'trapezoidal' or kind == 'triangular' or kind == 'rectangular' or kind == 'crisp':
-                a = self._a
-                m = self._m
-                n = self._n
-                b = self._b
-                if mi > 1 or mi < 0:
-                    return None, None
-                if mi == 0:
-                    return a, b
-                return float(mi * float(m - a) / height + a), float(b - mi * float(b - n) / height)
+        return self.calc(float(kwargs['x']))
 
-            elif kind == 'custom':
-                return self._ifunc(mi)
+    def calc(self, x):
+        # Get 'kind'
+        kind = self._kind
+        # Get 'height'
+        height = self._height
 
-        else:
-            # REGULAR
+        # Get 'x' value
+        if kind == 'trapezoidal' or kind == 'triangular' or kind == 'rectangular' or kind == 'crisp':
+            a = self._a
+            m = self._m
+            n = self._n
+            b = self._b
+            if a < x < m:
+                return height * (x - a) / (m - a)
+            elif m <= x <= n:
+                return height
+            elif n < x < b:
+                return height * (b - x) / (b - n)
+            return 0
 
-            # Get 'x' value
-            x = float(kwargs['x'])
-            if kind == 'trapezoidal' or kind == 'triangular' or kind == 'rectangular' or kind == 'crisp':
-                a = self._a
-                m = self._m
-                n = self._n
-                b = self._b
-                if a < x < m:
-                    return height * (x - a) / (m - a)
-                elif m <= x <= n:
-                    return height
-                elif n < x < b:
-                    return height * (b - x) / (b - n)
-                return 0
+        elif kind == 'custom':
+            return self._func(x)
 
-            elif kind == 'custom':
-                return self._func(x)
+        return 0
+
+    def inv(self, mi):
+        # Get 'kind'
+        kind = self._kind
+        # Get 'height'
+        height = self._height
+
+        if kind == 'trapezoidal' or kind == 'triangular' or kind == 'rectangular' or kind == 'crisp':
+            a = self._a
+            m = self._m
+            n = self._n
+            b = self._b
+            if mi > 1 or mi < 0:
+                return [None, None]
+            if mi == 0:
+                return a, b
+            return [float(mi * float(m - a) / height + a), float(b - mi * float(b - n) / height)]
+
+        elif kind == 'custom':
+            return self._ifunc(mi)
 
         return 0
 

@@ -7,7 +7,9 @@
 # ======================================================================================================================
 
 from matplotlib import pyplot as plt
-from myfuzzy.base import FuzzyUniverse, MembershipFunc
+from fuzzychan.base import FuzzyUniverse
+from fuzzychan.function import MembershipFunc
+from fuzzychan.relation import FuzzyRelation, EnumRelation
 
 
 def usage_example():
@@ -43,10 +45,10 @@ def usage_example():
     # Plot do universo
     fig = plt.figure()
     altura.plot(figure=fig)
-    plt.show()
 
     # Plot do universo filtrado
-    altura.plot(vars=['alto', 'medio'])
+    fig = plt.figure()
+    altura.plot(figure=fig, vars=['alto', 'medio'])
     plt.show()
 
     """
@@ -57,6 +59,7 @@ def usage_example():
     # union(x=1, y=2, z=9, a=4) -> point
     # union(x=[1, 9]) -> limit x only
 
+
     """
     Ideia de criacao de regras
     """
@@ -65,62 +68,6 @@ def usage_example():
     # plt.show()
 
     # TODO: Unir regras?
-
-
-def cupuacu():
-    """
-    1) Regras
-        1) Se eh alto e pesado entao eh forte
-        2) Se tem altura media e tem peso moderado entao eh levemente forte
-        3) Se eh baixo e leve entao tem forca media
-    """
-    pass
-
-    """
-    1.1) Calcular e plotar os antecedentes da regra:
-        1) alto e pesado
-        2) altura media e peso moderado
-        3) baixo e leve
-    """
-    pass
-
-    """
-    1.2) Obter cada relacao que descreve as regras Rj (j=1,2,3).
-        Operador agregacao E -> min ou prod (usuario escolhe)
-    """
-    pass
-
-    """
-    2) 
-    input = levemente alto e muito pesado
-        Conc1: input * R1
-        Conc2: input * R2
-        Conc3: input * R3
-        onde * -> operador de composicao sup-min
-        Conc = Uniao(Conc1, Conc2, Conc3)
-        
-        Dicas:
-        2.1) input -> matriz bidimensional
-        2.2) extensao cilindrica do input -> matriz tridimensional
-        2.3) Relacao Rj de cada regra -> matriz tridimensional
-        2.4) Conc_j = Projecao em X1 e X2 (altura e peso)
-        2.5) Conc = Uniao(Conc_j, j{1,2,3})
-    """
-    pass
-
-    """
-    3) parecido com o 2
-    Conc: input * R
-    onde R = Uniao(R1, R2, R3)
-    
-        Dicas:
-        3.1) input -> matriz bidimensional
-        3.2) extensao cilindrica do input -> matriz tridimensional
-        3.3) Relacao Rj de cada regra -> matriz tridimensional
-        3.4) R=Uniao(R_j, j={1,2,3})
-        3.5) Conc = Projecao em X1 e X2 (altura e peso)
-    """
-    pass
 
 
 def main():

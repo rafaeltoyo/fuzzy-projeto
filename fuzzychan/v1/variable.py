@@ -6,7 +6,7 @@
 from matplotlib import pyplot as plt
 from numpy import linspace
 
-from myfuzzy.continuous.function import Function
+from fuzzychan.continuous.function import Function
 
 
 # ==================================================================================================================== #

@@ -8,9 +8,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from myfuzzy.fulltroll import Variable
-from myfuzzy.rule import Rule
-from myfuzzy.continuous.function import TriagularMFunction
+from fuzzychan.v1.variable import Variable
+from fuzzychan.v1.rule import Rule
+from fuzzychan.continuous.function import TriagularMFunction
 
 
 # ----------------------------------------------------------------------------------------------------------------------
