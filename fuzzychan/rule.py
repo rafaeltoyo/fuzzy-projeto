@@ -15,6 +15,45 @@ from fuzzychan.relation import FuzzyRelation
 
 
 # ==================================================================================================================== #
+
+
+def fuzzy_conclusion(rule, test):
+    """
+    Gerar conclusao a partir de uma regra e uma entrada
+    :param rule: Regra Fuzzy
+    :type rule: FuzzyRule
+    :param test: Relacao de entrada
+    :type test: FuzzyRelation
+    """
+
+    # Discretizar a regra e a entrada
+    # FIXME: verificar se B nao tem funcoes de dominio nao presente na regra
+    a = rule.matrix()
+    b = test.matrix()
+
+    dim_a = a.ndim
+    dim_b = b.ndim
+
+    # Diferenca de dimensao (Naturalmente, dimensao de A pode ser maior que B)
+    # Se dimencao de B for maior, basta ignorar variaveis sem utilidade de B
+    diff = a.ndim - b.ndim
+    if diff > 0:
+
+        # Extensao Cilindrica da entrada
+        fix = [dim if diff > iter else 1 for iter in range(0, dim_a)]
+        b = np.tile(b, fix)
+    
+    results = []
+    for ai, bi in zip(np.ravel(a), np.ravel(b)):
+
+        # Norma-T
+        r = min(ai, bi)
+        results.append(r)
+
+    return np.array(results).reshape(a.shape)
+
+
+# ==================================================================================================================== #
 #   EnumRelation
 # -------------------------------------------------------------------------------------------------------------------- #
 #   Enum de Normas implementadas
@@ -55,7 +94,7 @@ class FuzzyRule(object):
         """
 
         # Tipo que sera utilizado para relacionar os conjuntos
-        self._kind = str(kind)
+        self._kind = kind
         # Lista dos conjuntos fuzzy da relacao
         self._antecedent = antecedent
         self._consequent = consequent
@@ -91,45 +130,33 @@ class FuzzyRule(object):
     def matrix(self, complete=False):
 
         # Gerar as matrizes para regra
-        r_a = self._antecedent.matrix(complete=True)
-        r_b = self._consequent.matrix(complete=True)
+        a = self._antecedent.matrix()
+        b = self._consequent.matrix()
 
-        # Pegar apenas o resultado
-        a = r_a[len(r_a) - 1]
-        b = r_b[len(r_b) - 1]
+        # Produto cartesiano entre os dominios das funcoes do antecedente e do consequente
+        domains = [self._antecedent._funcs[key]._universe.domain.points for key in self._antecedent._funcs]
+        for key in self._consequent._funcs:
+            func =  self._consequent._funcs[key]
+            domains.append(func._universe.domain.points)
+        domain = np.meshgrid(*domains)
 
-        dim_a = self._antecedent.dimension() + 1
-        dim_b = self._consequent.dimension() + 1
-
-        # Diferenca de dimensoes ???
-        diff = abs(dim_a - dim_b)
-        targ = max(dim_a, dim_b)
-        dim = len(a)
-
-        if diff > 0:
-            # Parametros para o numpy.tile()
-            fix = [dim if diff > iter else 1 for iter in range(0, targ)]
-
-            # Expansao cilindrica
-            if dim_a > dim_b:
-                prod_cart = np.array(a).copy()
-                b = np.tile(b, fix)
-            else:
-                prod_cart = np.array(b).copy()
-                a = np.tile(a, fix)
-        else:
-            prod_cart = np.array(a).copy()
-
+        # Produto cartesiano entre as matrizes de resultados (somar as dimensoes)
         A, B = np.meshgrid(a, b)
-
-        results = []
-        results = np.array([self(val_a, val_b) for (val_a, val_b) in zip(np.ravel(A), np.ravel(B))]).reshape(
-            [dim for iter in range(0, targ + 1)])
-
+        results = np.array([self(val_a, val_b) for (val_a, val_b) in zip(np.ravel(A), np.ravel(B))]).reshape([len(points) for points in domain])
+        
         if complete:
-            prod_cart[len(prod_cart) - 1] = results
-            return prod_cart
+            domain.append(results)
+            return domain
         return results
+
+    def conclusion(self, test):
+        """
+        Gerar uma conclusao para essa regra
+        :param input: Entrada
+        :type input: FuzzyRelation
+        """
+        fuzzy_conclusion(self, test)
+
 
     def plot(self, vars=None, figure=None):
         """

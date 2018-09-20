@@ -6,11 +6,7 @@
 #   11/08/2018
 # ======================================================================================================================
 
-from matplotlib import pyplot as plt
-from fuzzychan.base import FuzzyUniverse
-from fuzzychan.function import MembershipFunc
-from fuzzychan.relation import FuzzyRelation, EnumRelation
-
+from exercicios import pp2parte2 as pp2
 
 def usage_example():
     """
@@ -71,7 +67,7 @@ def usage_example():
 
 
 def main():
-    usage_example()
+    pp2p2()
 
 
 if __name__ == "__main__":

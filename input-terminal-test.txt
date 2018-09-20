@@ -1,0 +1,20 @@
+import numpy as np
+
+from matplotlib import pyplot as plt
+
+from fuzzychan.base import FuzzyUniverse, MembershipFunc
+from fuzzychan.relation import FuzzyRelation, EnumRelation
+from fuzzychan.rule import FuzzyRule, EnumRule
+
+from exercicios import pp2parte2 as pp2
+
+altura, peso, forca = pp2.func1(), pp2.func2(), pp2.func3()
+
+relacao1 = FuzzyRelation(kind=EnumRelation.Min, x=altura['alto'], y=peso['pesado'])
+relacao2 = FuzzyRelation(kind=EnumRelation.Min, x=altura['medio'], y=peso['moderado'])
+relacao3 = FuzzyRelation(kind=EnumRelation.Min, x=altura['baixo'], y=peso['leve'])
+
+regra1 = FuzzyRule(relacao1, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
+regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
+regra3 = FuzzyRule(relacao3, FuzzyRelation(x=forca['media']), kind=EnumRule.ConjMin)
+

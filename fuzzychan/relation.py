@@ -52,7 +52,7 @@ class FuzzyRelation(object):
         """""
 
         # Tipo que sera utilizado para relacionar os conjuntos
-        self._kind = str(kind)
+        self._kind = kind
         # Salvar uma constante que pode ser utilizada na operacao de relacionamento
         self._const = float(const)
         # Lista dos conjuntos fuzzy da relacao

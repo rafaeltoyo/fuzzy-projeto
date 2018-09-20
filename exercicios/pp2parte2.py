@@ -5,17 +5,19 @@
 #   11/09/2018
 # ======================================================================================================================
 
+
+import numpy as np
+
 from matplotlib import pyplot as plt
+
 from fuzzychan.base import FuzzyUniverse, MembershipFunc
 from fuzzychan.relation import FuzzyRelation, EnumRelation
 from fuzzychan.rule import FuzzyRule, EnumRule
 
-import numpy as np
-
 
 # ======================================================================================================================
 
-SAMPLE = 5
+SAMPLE = 20
 
 
 def func1():
@@ -72,9 +74,7 @@ def main():
         3) Se eh baixo e leve entao tem forca media
     """
 
-    altura = func1()
-    peso = func2()
-    forca = func3()
+    altura, peso, forca = func1(), func2(), func3()
 
     #altura.plot(figure=plt.figure())
     #peso.plot(figure=plt.figure())
@@ -132,10 +132,7 @@ def main():
     input = np.tile(input, (SAMPLE, 1, 1))
 
     def teste(regra, input):
-
-        X, Y = np.meshgrid(regra, input)
-        print(X)
-        print(Y)
+        pass
 
     teste(result1, input)
 
