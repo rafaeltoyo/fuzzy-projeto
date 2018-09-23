@@ -30,14 +30,8 @@ def fuzzy_conclusion(rule, test):
 
     # Discretizar a regra e a entrada
     # FIXME: verificar se B nao tem funcoes de dominio nao presente na regra
-    if isinstance(rule, FuzzyRule):
-        a = rule.matrix()
-    else:
-        a = rule
-    if isinstance(test, FuzzyRelation):
-        b = test.matrix()
-    else:
-        b = test
+    a = rule.matrix() if isinstance(rule, FuzzyRule) else rule
+    b = test.matrix() if isinstance(test, FuzzyRelation) else test
 
     # Diferenca de dimensao (Naturalmente, dimensao de A pode ser maior que B)
     # Se dimencao de B for maior, basta ignorar variaveis sem utilidade de B
