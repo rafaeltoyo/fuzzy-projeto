@@ -9,15 +9,15 @@
 import numpy as np
 
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 from fuzzychan.base import FuzzyUniverse, MembershipFunc
 from fuzzychan.relation import FuzzyRelation, EnumRelation
-from fuzzychan.rule import FuzzyRule, EnumRule
-
+from fuzzychan.rule import FuzzyRule, EnumRule, fuzzy_conclusion
 
 # ======================================================================================================================
 
-SAMPLE = 20
+SAMPLE = 30
 
 
 def func1():
@@ -66,7 +66,7 @@ def main():
     Funcao Main
     :return: None
     """
-    
+
     """
     1) Regras
         1) Se eh alto e pesado entao eh forte
@@ -76,10 +76,10 @@ def main():
 
     altura, peso, forca = func1(), func2(), func3()
 
-    #altura.plot(figure=plt.figure())
-    #peso.plot(figure=plt.figure())
-    #forca.plot(figure=plt.figure())
-    #plt.show()
+    # altura.plot(figure=plt.figure())
+    # peso.plot(figure=plt.figure())
+    # forca.plot(figure=plt.figure())
+    # plt.show()
 
     """
     1.1) Calcular e plotar os antecedentes da regra:
@@ -92,10 +92,10 @@ def main():
     relacao2 = FuzzyRelation(kind=EnumRelation.Min, x=altura['medio'], y=peso['moderado'])
     relacao3 = FuzzyRelation(kind=EnumRelation.Min, x=altura['baixo'], y=peso['leve'])
 
-    #relacao1.plot(figure=plt.figure())
-    #relacao2.plot(figure=plt.figure())
-    #relacao3.plot(figure=plt.figure())
-    #plt.show()
+    # relacao1.plot(figure=plt.figure())
+    # relacao2.plot(figure=plt.figure())
+    # relacao3.plot(figure=plt.figure())
+    # plt.show()
 
     """
     1.2) Obter cada relacao que descreve as regras Rj (j=1,2,3).
@@ -106,11 +106,9 @@ def main():
     regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
     regra3 = FuzzyRule(relacao3, FuzzyRelation(x=forca['media']), kind=EnumRule.ConjMin)
 
-    result1 = regra1.matrix()
-    result2 = regra2.matrix()
-    result3 = regra3.matrix()
+    input = FuzzyRelation(kind=EnumRelation.Min, x=altura['alto'], y=peso['pesado'])
 
-    input = FuzzyRelation(kind=EnumRelation.Min, x=altura['alto'], y=peso['pesado']).matrix()
+    inX, inY = np.meshgrid(altura.domain.points, peso.domain.points)
 
     """
     2) 
@@ -129,12 +127,16 @@ def main():
         2.5) Conc = Uniao(Conc_j, j{1,2,3})
     """
 
-    input = np.tile(input, (SAMPLE, 1, 1))
+    conc1 = fuzzy_conclusion(regra1, input).max(2)
+    conc2 = fuzzy_conclusion(regra2, input).max(2)
+    conc3 = fuzzy_conclusion(regra3, input).max(2)
 
-    def teste(regra, input):
-        pass
+    conclusion = np.array([max(c1, c2, c3) for (c1, c2, c3) in
+                           zip(np.ravel(conc1), np.ravel(conc2), np.ravel(conc3))]).reshape(conc1.shape)
 
-    teste(result1, input)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(inX, inY, conclusion)
 
     """
     3) parecido com o 2
@@ -149,7 +151,19 @@ def main():
         3.5) Conc = Projecao em X1 e X2 (altura e peso)
     """
 
-    pass
+    result1 = regra1.matrix()
+    result2 = regra2.matrix()
+    result3 = regra3.matrix()
+    regra = np.array(
+        [max(r1, r2, r3) for (r1, r2, r3) in zip(np.ravel(result1), np.ravel(result2), np.ravel(result3))]).reshape(
+        result1.shape)
+    conclusion = fuzzy_conclusion(regra, input).max(2)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(inX, inY, conclusion)
+
+    plt.show()
 
 
 if __name__ == "__main__":

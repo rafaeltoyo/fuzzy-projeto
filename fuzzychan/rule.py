@@ -7,6 +7,7 @@ import math
 from enum import Enum
 
 import numpy as np
+from numpy import ndarray
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -21,18 +22,22 @@ def fuzzy_conclusion(rule, test):
     """
     Gerar conclusao a partir de uma regra e uma entrada
     :param rule: Regra Fuzzy
-    :type rule: FuzzyRule
+    :type rule: FuzzyRule|ndarray
     :param test: Relacao de entrada
-    :type test: FuzzyRelation
+    :type test: FuzzyRelation|ndarray
+    :return: ndarray
     """
 
     # Discretizar a regra e a entrada
     # FIXME: verificar se B nao tem funcoes de dominio nao presente na regra
-    a = rule.matrix()
-    b = test.matrix()
-
-    dim_a = a.ndim
-    dim_b = b.ndim
+    if isinstance(rule, FuzzyRule):
+        a = rule.matrix()
+    else:
+        a = rule
+    if isinstance(test, FuzzyRelation):
+        b = test.matrix()
+    else:
+        b = test
 
     # Diferenca de dimensao (Naturalmente, dimensao de A pode ser maior que B)
     # Se dimencao de B for maior, basta ignorar variaveis sem utilidade de B
@@ -40,13 +45,14 @@ def fuzzy_conclusion(rule, test):
     if diff > 0:
 
         # Extensao Cilindrica da entrada
-        fix = [dim if diff > iter else 1 for iter in range(0, dim_a)]
+        sample = len(a)
+        fix = [sample if diff > iter else 1 for iter in range(0, a.ndim)]
         b = np.tile(b, fix)
     
     results = []
     for ai, bi in zip(np.ravel(a), np.ravel(b)):
 
-        # Norma-T
+        # Norma-T qualquer (escolhida -> min)
         r = min(ai, bi)
         results.append(r)
 
