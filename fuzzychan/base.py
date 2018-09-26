@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 from matplotlib.pyplot import Figure
 
 from fuzzychan.function import MembershipFunc
+from fuzzychan.operator import EnumFuzzyOper, FuzzyOperator
 
 
 # ==================================================================================================================== #
@@ -94,9 +95,30 @@ class FuzzyUniverse(dict):
         """
 
         :param item:
+        :type item: str
         :return: FuzzySet
         """
-        return super(FuzzyUniverse, self).__getitem__(item)
+
+        terms = item.split(' ')
+
+        fz_set = super(FuzzyUniverse, self).__getitem__(terms[len(terms)-1])
+
+        if len(terms) == 1:
+            return fz_set
+
+        func = fz_set.func
+
+        for term_i in reversed(range(len(terms)-1)):
+            if terms[term_i] == 'muito':
+                func = FuzzyOperator(func, kind=EnumFuzzyOper.Concentration, p=2)
+            elif terms[term_i] == 'nao':
+                func = FuzzyOperator(func, kind=EnumFuzzyOper.Complement)
+            elif terms[term_i] == 'levemente':
+                func2 = FuzzyOperator(func, kind=EnumFuzzyOper.Concentration, p=2)
+                func2 = FuzzyOperator(func2, kind=EnumFuzzyOper.Complement)
+                func = FuzzyOperator(func, func2, kind=EnumFuzzyOper.Intersection)
+
+        return FuzzySet(self, func=func)
 
     def plot(self, vars=None, figure=None):
         """

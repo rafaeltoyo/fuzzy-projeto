@@ -11,6 +11,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+from exercicios.mymenu import Menu
+
 from fuzzychan.base import FuzzyUniverse, MembershipFunc
 from fuzzychan.relation import FuzzyRelation, EnumRelation
 from fuzzychan.rule import FuzzyRule, EnumRule, fuzzy_conclusion
@@ -67,6 +69,14 @@ def main():
     :return: None
     """
 
+    main_menu = Menu("Selecione uma opcao")
+    main_menu.add("Ver universos")
+    main_menu.add("Ver antecedentes")
+    main_menu.add("Plotar universo 'forca'")
+    main_menu.add("Sair")
+
+    user_func = main_menu.show()
+
     """
     1) Regras
         1) Se eh alto e pesado entao eh forte
@@ -76,10 +86,14 @@ def main():
 
     altura, peso, forca = func1(), func2(), func3()
 
-    # altura.plot(figure=plt.figure())
-    # peso.plot(figure=plt.figure())
-    # forca.plot(figure=plt.figure())
-    # plt.show()
+    if user_func == 1:
+        altura.plot(figure=plt.figure())
+        peso.plot(figure=plt.figure())
+        forca.plot(figure=plt.figure())
+        plt.show()
+        return True
+    if user_func == 4:
+        return False
 
     """
     1.1) Calcular e plotar os antecedentes da regra:
@@ -88,14 +102,21 @@ def main():
         3) baixo e leve
     """
 
-    relacao1 = FuzzyRelation(kind=EnumRelation.Min, x=altura['alto'], y=peso['pesado'])
-    relacao2 = FuzzyRelation(kind=EnumRelation.Min, x=altura['medio'], y=peso['moderado'])
-    relacao3 = FuzzyRelation(kind=EnumRelation.Min, x=altura['baixo'], y=peso['leve'])
+    aggr_menu = Menu("Escolha um operador para agregacao do antecedente:")
+    aggr_menu.add("min")
+    aggr_menu.add("prod")
+    user_aggr = EnumRelation.Min if aggr_menu.show() == 1 else EnumRelation.Prod
 
-    # relacao1.plot(figure=plt.figure())
-    # relacao2.plot(figure=plt.figure())
-    # relacao3.plot(figure=plt.figure())
-    # plt.show()
+    relacao1 = FuzzyRelation(kind=user_aggr, x=altura['alto'], y=peso['pesado'])
+    relacao2 = FuzzyRelation(kind=user_aggr, x=altura['medio'], y=peso['moderado'])
+    relacao3 = FuzzyRelation(kind=user_aggr, x=altura['baixo'], y=peso['leve'])
+
+    if user_func == 2:
+        relacao1.plot(figure=plt.figure())
+        relacao2.plot(figure=plt.figure())
+        relacao3.plot(figure=plt.figure())
+        plt.show()
+        return True
 
     """
     1.2) Obter cada relacao que descreve as regras Rj (j=1,2,3).
@@ -106,13 +127,18 @@ def main():
     regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
     regra3 = FuzzyRule(relacao3, FuzzyRelation(x=forca['media']), kind=EnumRule.ConjMin)
 
-    input = FuzzyRelation(kind=EnumRelation.Min, x=altura['alto'], y=peso['pesado'])
+    """
+    input = levemente alto e muito pesado
+    """
+
+    input = FuzzyRelation(kind=user_aggr, x=altura['levemente alto'], y=peso['muito pesado'])
+    input.plot(figure=plt.figure())
+    plt.show()
 
     inX, inY = np.meshgrid(altura.domain.points, peso.domain.points)
 
     """
     2) 
-    input = levemente alto e muito pesado
         Conc1: input * R1
         Conc2: input * R2
         Conc3: input * R3
