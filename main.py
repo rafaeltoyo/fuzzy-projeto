@@ -6,69 +6,13 @@
 #   11/08/2018
 # ======================================================================================================================
 
-from exercicios import pp2parte2 as pp2
-
-def usage_example():
-    """
-    Exemplo de uso da biblioteca Fuzzy
-    :return:
-    """
-
-    """
-    Ideia de Universo Fuzzy e seus termos (funcoes de pertinencia)
-    """
-
-    # Criacao do universo 'altura'
-    altura = FuzzyUniverse("altura", 1.0, 2.0, 1000)
-
-    # Funcoes de perticencia triangulares
-    altura['alto'] = MembershipFunc(1.5, 2.0, 2.0)
-    altura['medio'] = MembershipFunc(1.0, 1.5, 2.0)
-    altura['baixo'] = MembershipFunc(1.0, 1.0, 1.5)
-
-    # Alfa-corte
-    altura['a-baixo'] = MembershipFunc(1.0, 1.0, 1.5).alpha_cut(0.4)
-
-    # Funcao de pertinencia retangular/crisp
-    altura['teste1'] = MembershipFunc(1.2, 1.3)
-
-    # Funcao de pertinencia trapezoidal
-    altura['teste2'] = MembershipFunc(1.4, 1.6, 1.8, 1.9)
-
-    # Funcao de pertinencia customizada
-    altura['teste3'] = MembershipFunc(lambda x: 1 - 1/x, lambda mi: 1/(1 - mi))
-
-    # Plot do universo
-    fig = plt.figure()
-    altura.plot(figure=fig)
-
-    # Plot do universo filtrado
-    fig = plt.figure()
-    altura.plot(figure=fig, vars=['alto', 'medio'])
-    plt.show()
-
-    """
-    Ideia de criacao das relacoes
-    """
-    # funcN = MembershipFunc
-    # union = Union(x=func1, y=func2, z=func3, a=func4, kind=kind)
-    # union(x=1, y=2, z=9, a=4) -> point
-    # union(x=[1, 9]) -> limit x only
-
-
-    """
-    Ideia de criacao de regras
-    """
-    # rule = Rule(antecedent=antecedent, consequent=consequent, kind=kind)
-    # rule.plot()
-    # plt.show()
-
-    # TODO: Unir regras?
+from exercicios.pp2parte1 import main as pp2p1
+from exercicios.pp2parte2 import main as pp2p2
 
 
 def main():
-    pp2p2()
-
+    while pp2p2():
+        pass
 
 if __name__ == "__main__":
     main()
