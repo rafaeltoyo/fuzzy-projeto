@@ -72,7 +72,7 @@ def main():
     main_menu = Menu("Selecione uma opcao")
     main_menu.add("Ver universos")
     main_menu.add("Ver antecedentes")
-    main_menu.add("Plotar universo 'forca'")
+    main_menu.add("Executar tudo")
     main_menu.add("Sair")
 
     user_func = main_menu.show()
@@ -153,16 +153,17 @@ def main():
         2.5) Conc = Uniao(Conc_j, j{1,2,3})
     """
 
-    conc1 = fuzzy_conclusion(regra1, input).max(2)
-    conc2 = fuzzy_conclusion(regra2, input).max(2)
-    conc3 = fuzzy_conclusion(regra3, input).max(2)
+    conc1 = fuzzy_conclusion(regra1, input).max(1).max(0)
+    conc2 = fuzzy_conclusion(regra2, input).max(1).max(0)
+    conc3 = fuzzy_conclusion(regra3, input).max(1).max(0)
 
     conclusion = np.array([max(c1, c2, c3) for (c1, c2, c3) in
                            zip(np.ravel(conc1), np.ravel(conc2), np.ravel(conc3))]).reshape(conc1.shape)
 
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(inX, inY, conclusion)
+    #ax = fig.add_subplot(111, projection='3d')
+    #ax.plot_surface(inX, inY, conclusion)
+    plt.plot(forca.domain.points, conclusion)
 
     """
     3) parecido com o 2
@@ -183,11 +184,12 @@ def main():
     regra = np.array(
         [max(r1, r2, r3) for (r1, r2, r3) in zip(np.ravel(result1), np.ravel(result2), np.ravel(result3))]).reshape(
         result1.shape)
-    conclusion = fuzzy_conclusion(regra, input).max(2)
+    conclusion = fuzzy_conclusion(regra, input).max(1).max(0)
 
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(inX, inY, conclusion)
+    #ax = fig.add_subplot(111, projection='3d')
+    #ax.plot_surface(inX, inY, conclusion)
+    plt.plot(forca.domain.points, conclusion)
 
     plt.show()
 
