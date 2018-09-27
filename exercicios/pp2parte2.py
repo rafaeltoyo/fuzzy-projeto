@@ -123,8 +123,9 @@ def main():
         Operador agregacao E -> min ou prod (usuario escolhe)
     """
 
+    # TODO: Acoplar as regras em um banco de regras
     regra1 = FuzzyRule(relacao1, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
-    regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
+    regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['levemente forte']), kind=EnumRule.ConjMin)
     regra3 = FuzzyRule(relacao3, FuzzyRelation(x=forca['media']), kind=EnumRule.ConjMin)
 
     """
@@ -153,6 +154,7 @@ def main():
         2.5) Conc = Uniao(Conc_j, j{1,2,3})
     """
 
+    # FIXME: Acoplar a projecao para sempre ser feita no dominio do consequente
     conc1 = fuzzy_conclusion(regra1, input).max(1).max(0)
     conc2 = fuzzy_conclusion(regra2, input).max(1).max(0)
     conc3 = fuzzy_conclusion(regra3, input).max(1).max(0)
@@ -192,6 +194,8 @@ def main():
     plt.plot(forca.domain.points, conclusion)
 
     plt.show()
+
+    return True
 
 
 if __name__ == "__main__":
