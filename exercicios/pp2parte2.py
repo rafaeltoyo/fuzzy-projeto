@@ -133,7 +133,7 @@ def main():
     """
 
     input = FuzzyRelation(kind=user_aggr, x=altura['levemente alto'], y=peso['muito pesado'])
-    input.plot(figure=plt.figure())
+    #input.plot(figure=plt.figure())
     plt.show()
 
     inX, inY = np.meshgrid(altura.domain.points, peso.domain.points)
@@ -155,9 +155,12 @@ def main():
     """
 
     # FIXME: Acoplar a projecao para sempre ser feita no dominio do consequente
-    conc1 = fuzzy_conclusion(regra1, input).max(1).max(0)
-    conc2 = fuzzy_conclusion(regra2, input).max(1).max(0)
-    conc3 = fuzzy_conclusion(regra3, input).max(1).max(0)
+    conc1 = fuzzy_conclusion(regra1, input).max(2).max(1)
+    plt.plot(forca.domain.points, conc1)
+    conc2 = fuzzy_conclusion(regra2, input).max(2).max(1)
+    plt.plot(forca.domain.points, conc2)
+    conc3 = fuzzy_conclusion(regra3, input).max(2).max(1)
+    plt.plot(forca.domain.points, conc3)
 
     conclusion = np.array([max(c1, c2, c3) for (c1, c2, c3) in
                            zip(np.ravel(conc1), np.ravel(conc2), np.ravel(conc3))]).reshape(conc1.shape)
@@ -186,7 +189,7 @@ def main():
     regra = np.array(
         [max(r1, r2, r3) for (r1, r2, r3) in zip(np.ravel(result1), np.ravel(result2), np.ravel(result3))]).reshape(
         result1.shape)
-    conclusion = fuzzy_conclusion(regra, input).max(1).max(0)
+    conclusion = fuzzy_conclusion(regra, input).max(2).max(1)
 
     fig = plt.figure()
     #ax = fig.add_subplot(111, projection='3d')
