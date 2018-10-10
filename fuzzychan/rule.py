@@ -18,9 +18,39 @@ from fuzzychan.relation import FuzzyRelation
 # ==================================================================================================================== #
 
 
+def fuzzy_rule_compute(a, b, kind):
+    """
+    Computar a regra para a coordenada passada
+    :param a: Valor do antecedente
+    :type a: int|float
+    :param b: Valor do consequente
+    :type b: int|float
+    :param kind: Semantica da regra
+    :type kind: str|EnumRule
+    :return: int|float
+    """
+    if kind == EnumRule.ConjMin:
+        return min(a, b)
+    if kind == EnumRule.ConjPro:
+        return a * b
+    if kind == EnumRule.DisjMax:
+        return max(a, b)
+    if kind == EnumRule.ImplLSWMin:
+        return min(1, min(1 - a, b))
+    if kind == EnumRule.ImplLSWPro:
+        return min(1, (1 - a) * b)
+    if kind == EnumRule.ImplGodel:
+        return 1 if a <= b else b
+    if kind == EnumRule.ImplKleene:
+        return max(1 - a, b)
+    if kind == EnumRule.ImplZadeh:
+        return max(1 - a, min(a, b))
+    return 0
+
+
 def fuzzy_conclusion(rule, test):
     """
-    Gerar conclusao a partir de uma regra e uma entrada
+    Gerar conclusao a partir de uma regra e uma entrada linguistica
     :param rule: Regra Fuzzy
     :type rule: FuzzyRule|ndarray
     :param test: Relacao de entrada
@@ -109,23 +139,7 @@ class FuzzyRule(object):
         b = args[1] if len(args) > 1 else self._consequent(*args, **kwargs)
 
         # Computar a regra para a coordenada passada
-        if kind == EnumRule.ConjMin:
-            return min(a, b)
-        if kind == EnumRule.ConjPro:
-            return a * b
-        if kind == EnumRule.DisjMax:
-            return max(a, b)
-        if kind == EnumRule.ImplLSWMin:
-            return min(1, min(1 - a, b))
-        if kind == EnumRule.ImplLSWPro:
-            return min(1, (1 - a) * b)
-        if kind == EnumRule.ImplGodel:
-            return 1 if a <= b else b
-        if kind == EnumRule.ImplKleene:
-            return max(1 - a, b)
-        if kind == EnumRule.ImplZadeh:
-            return max(1 - a, min(a, b))
-        return 0
+        return fuzzy_rule_compute(a, b, kind)
 
     def matrix(self, complete=False):
 
