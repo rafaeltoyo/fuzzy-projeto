@@ -169,6 +169,7 @@ class FuzzyRule(object):
         :param input: Entrada
         :type input: FuzzyRelation
         """
+        # TODO: suporte a dois modelos diferentes
         fuzzy_conclusion(self, test)
 
 

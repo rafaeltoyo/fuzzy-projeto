@@ -123,8 +123,9 @@ def main():
         Operador agregacao E -> min ou prod (usuario escolhe)
     """
 
+    # TODO: Acoplar as regras em um banco de regras
     regra1 = FuzzyRule(relacao1, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
-    regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['forte']), kind=EnumRule.ConjMin)
+    regra2 = FuzzyRule(relacao2, FuzzyRelation(x=forca['levemente forte']), kind=EnumRule.ConjMin)
     regra3 = FuzzyRule(relacao3, FuzzyRelation(x=forca['media']), kind=EnumRule.ConjMin)
 
     """
@@ -132,7 +133,7 @@ def main():
     """
 
     input = FuzzyRelation(kind=user_aggr, x=altura['levemente alto'], y=peso['muito pesado'])
-    input.plot(figure=plt.figure())
+    #input.plot(figure=plt.figure())
     plt.show()
 
     inX, inY = np.meshgrid(altura.domain.points, peso.domain.points)
@@ -153,9 +154,13 @@ def main():
         2.5) Conc = Uniao(Conc_j, j{1,2,3})
     """
 
-    conc1 = fuzzy_conclusion(regra1, input).max(1).max(0)
-    conc2 = fuzzy_conclusion(regra2, input).max(1).max(0)
-    conc3 = fuzzy_conclusion(regra3, input).max(1).max(0)
+    # FIXME: Acoplar a projecao para sempre ser feita no dominio do consequente
+    conc1 = fuzzy_conclusion(regra1, input).max(2).max(1)
+    plt.plot(forca.domain.points, conc1)
+    conc2 = fuzzy_conclusion(regra2, input).max(2).max(1)
+    plt.plot(forca.domain.points, conc2)
+    conc3 = fuzzy_conclusion(regra3, input).max(2).max(1)
+    plt.plot(forca.domain.points, conc3)
 
     conclusion = np.array([max(c1, c2, c3) for (c1, c2, c3) in
                            zip(np.ravel(conc1), np.ravel(conc2), np.ravel(conc3))]).reshape(conc1.shape)
@@ -184,7 +189,7 @@ def main():
     regra = np.array(
         [max(r1, r2, r3) for (r1, r2, r3) in zip(np.ravel(result1), np.ravel(result2), np.ravel(result3))]).reshape(
         result1.shape)
-    conclusion = fuzzy_conclusion(regra, input).max(1).max(0)
+    conclusion = fuzzy_conclusion(regra, input).max(2).max(1)
 
     fig = plt.figure()
     #ax = fig.add_subplot(111, projection='3d')
@@ -192,6 +197,8 @@ def main():
     plt.plot(forca.domain.points, conclusion)
 
     plt.show()
+
+    return True
 
 
 if __name__ == "__main__":
