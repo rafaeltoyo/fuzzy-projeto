@@ -15,6 +15,7 @@ from exercicios.mymenu import Menu
 
 from fuzzychan.base import FuzzyUniverse, MembershipFunc
 from fuzzychan.inference.mamdani import MamdaniModel, EnumMamdaniDfzz, EnumMamdaniAggr, EnumMamdaniOper, EnumMamdaniImpl
+from fuzzychan.inference.sugeno import SugenoModel, EnumSugenoDfzz, EnumSugenoAggr, EnumSugenoOper, EnumSugenoImpl, SugenoRule
 
 
 # ======================================================================================================================
@@ -55,7 +56,7 @@ def func_y(sample):
 # ======================================================================================================================
 
 
-def main():
+def main1():
     x1 = func_x1(SAMPLE)
     x2 = func_x2(SAMPLE)
     y = func_y(SAMPLE)
@@ -81,7 +82,33 @@ def main():
     out = np.array([[int(i), int(j), mamdani(x1=i, x2=j)] for i in range(0, 110, 10) for j in range(0, 110, 10)])
     np.savetxt("mamdani-mom.csv", out, fmt=['%d', '%d', '%.5f'], delimiter=";")
 
+
+def main2():
+    x1 = func_x1(SAMPLE)
+    x2 = func_x2(SAMPLE)
+    y = func_y(SAMPLE)
+
+    sugeno = SugenoModel(
+        oper=EnumSugenoOper.Prod,
+        dfzz=EnumSugenoDfzz.Avg,
+        x1=x1,
+        x2=x2,
+        out=y)
+    sugeno.create_rule(x1='PS', x2='SM', out=0.5)
+    sugeno.create_rule(x1='PS', x2='MM', out=23)
+    sugeno.create_rule(x1='PS', x2='GM', out=42)
+    sugeno.create_rule(x1='MS', x2='SM', out=10)
+    sugeno.create_rule(x1='MS', x2='MM', out=26)
+    sugeno.create_rule(x1='MS', x2='GM', out=42)
+    sugeno.create_rule(x1='GS', x2='SM', out=27)
+    sugeno.create_rule(x1='GS', x2='MM', out=41)
+    sugeno.create_rule(x1='GS', x2='GM', out=60)
+
+    out = np.array([[int(i), int(j), sugeno(x1=i, x2=j)] for i in range(0, 110, 10) for j in range(0, 110, 10)])
+    np.savetxt("sugeno-pro.csv", out, fmt=['%d', '%d', '%.5f'], delimiter=";")
+
+
 if __name__ == "__main__":
-    main()
+    main2()
 
 # ======================================================================================================================

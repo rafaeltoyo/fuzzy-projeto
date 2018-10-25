@@ -10,9 +10,9 @@ from enum import Enum
 
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List, Any, Union, Optional
+from typing import List, Union
 
-from fuzzychan.base import FuzzyUniverse, MembershipFunc, FuzzySet
+from fuzzychan.base import FuzzyUniverse, MembershipFunc, FuzzySet, Domain
 from fuzzychan.relation import FuzzyRelation
 from fuzzychan.rule import fuzzy_rule_compute
 from fuzzychan.operator import FuzzyOperator
@@ -23,7 +23,7 @@ from fuzzychan.relation import EnumRelation as EnumMamdaniAggr
 from fuzzychan.operator import EnumFuzzyOper
 
 
-# ======================================================================================================================
+# ==================================================================================================================== #
 
 class EnumMamdaniDfzz(Enum):
     CoS = 'CenterOfSums'
@@ -155,7 +155,7 @@ class MamdaniModel(object):
         :return:
         """
 
-        # Precisamos de um label de  selecao para cada input + o output
+        # Precisamos de um label de  selecao para cada input
         if len(kwargs) != len(self.__input):
             raise AttributeError
 
@@ -229,11 +229,11 @@ class MamdaniModel(object):
         # ---------------------------------------------------------- #
         # 2) Unir as regras
 
-        union = []
+        union = []  # type: List[Union[int, float]]
         for iter in range(len(r_rules[0])):
             values = []
-            for rule in r_rules:
-                values.append(rule[iter])
+            for r_rule in r_rules:
+                values.append(r_rule[iter])
 
             # escolher operador de uniao
             if self.__aggr == EnumMamdaniAggr.Max:
@@ -251,55 +251,69 @@ class MamdaniModel(object):
         # ---------------------------------------------------------- #
         # 3) Defuzzificar
 
+        return self.__defuzzification(union, domain.points)
+
+    def __defuzzification(self, points, domain):
+        """
+        Processo de Defuzzificacao
+        :param points: Lista de pontos do resultado para realizar a defuzzificacao
+        :type points: List[Union[int, float]]
+        :param domain: Lista de pontos do dominio do universo
+        :type domain: List[Union[int, float]]
+        :return:
+        """
+
         if self.__dfzz == EnumMamdaniDfzz.CoS:
             # Center of Sums
+            # TODO : Avaliar viabilidade de implementacao
             pass
 
         if self.__dfzz == EnumMamdaniDfzz.CoG:
             # Center of Gravity
             sum1 = sum2 = 0
             iter = 0
-            for x in domain.points:
-                sum1 += x * union[iter]
-                sum2 += union[iter]
+            for x in domain:
+                sum1 += x * points[iter]
+                sum2 += points[iter]
                 iter += 1
             return sum1 / sum2 if sum2 != 0 else 0
 
         if self.__dfzz == EnumMamdaniDfzz.BoA:
             # Bisector of Area
+            # TODO : Avaliar viabilidade de implementacao
             pass
 
         if self.__dfzz == EnumMamdaniDfzz.FoM:
             # First of Maxima
-            maxima = max(union)
+            maxima = max(points)
             iter = 0
-            for x in domain.points:
-                if union[iter] >= maxima:
+            for x in domain:
+                if points[iter] >= maxima:
                     return x
                 iter += 1
 
         if self.__dfzz == EnumMamdaniDfzz.LoM:
             # Last of Maxima
-            maxima = max(union)
+            maxima = max(points)
             iter = 0
-            last = domain.points[0]
-            for x in domain.points:
-                if union[iter] >= maxima:
+            last = domain[0]
+            for x in domain:
+                if points[iter] >= maxima:
                     last = x
                 iter += 1
             return last
 
         if self.__dfzz == EnumMamdaniDfzz.MoM:
             # Mean of Maxima
-            maxima = max(union)
+            maxima = max(points)
             iter = 0
             points = []
-            for x in domain.points:
-                if union[iter] >= maxima:
+            for x in domain:
+                if points[iter] >= maxima:
                     points.append(x)
                 iter += 1
             return sum(points) / len(points) if len(points) > 0 else 0
 
         return 0
 
-# ======================================================================================================================
+# ==================================================================================================================== #
