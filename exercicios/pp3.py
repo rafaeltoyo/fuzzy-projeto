@@ -60,7 +60,7 @@ def main():
     x2 = func_x2(SAMPLE)
     y = func_y(SAMPLE)
 
-    model = MamdaniModel(
+    mamdani = MamdaniModel(
         oper=EnumMamdaniOper.Prod,
         impl=EnumMamdaniImpl.ConjPro,
         aggr=EnumMamdaniAggr.Max,
@@ -68,17 +68,17 @@ def main():
         x1=x1,
         x2=x2,
         out=y)
-    model.create_rule(x1='PS', x2='SM', out='MC')
-    model.create_rule(x1='PS', x2='MM', out='M')
-    model.create_rule(x1='PS', x2='GM', out='L')
-    model.create_rule(x1='MS', x2='SM', out='C')
-    model.create_rule(x1='MS', x2='MM', out='M')
-    model.create_rule(x1='MS', x2='GM', out='L')
-    model.create_rule(x1='GS', x2='SM', out='M')
-    model.create_rule(x1='GS', x2='MM', out='L')
-    model.create_rule(x1='GS', x2='GM', out='ML')
+    mamdani.create_rule(x1='PS', x2='SM', out='MC')
+    mamdani.create_rule(x1='PS', x2='MM', out='M')
+    mamdani.create_rule(x1='PS', x2='GM', out='L')
+    mamdani.create_rule(x1='MS', x2='SM', out='C')
+    mamdani.create_rule(x1='MS', x2='MM', out='M')
+    mamdani.create_rule(x1='MS', x2='GM', out='L')
+    mamdani.create_rule(x1='GS', x2='SM', out='M')
+    mamdani.create_rule(x1='GS', x2='MM', out='L')
+    mamdani.create_rule(x1='GS', x2='GM', out='ML')
 
-    out = np.array([[int(i), int(j), model(x1=i, x2=j)] for i in range(0, 110, 10) for j in range(0, 110, 10)])
+    out = np.array([[int(i), int(j), mamdani(x1=i, x2=j)] for i in range(0, 110, 10) for j in range(0, 110, 10)])
     np.savetxt("mamdani-mom.csv", out, fmt=['%d', '%d', '%.5f'], delimiter=";")
 
 if __name__ == "__main__":

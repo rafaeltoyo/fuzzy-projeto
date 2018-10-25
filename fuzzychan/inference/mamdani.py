@@ -10,6 +10,7 @@ from enum import Enum
 
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import List, Any, Union, Optional
 
 from fuzzychan.base import FuzzyUniverse, MembershipFunc, FuzzySet
 from fuzzychan.relation import FuzzyRelation
@@ -28,12 +29,16 @@ class EnumMamdaniDfzz(Enum):
     CoS = 'CenterOfSums'
     CoG = 'CenterOfGravity'
     BoA = 'BisectorOfArea'
-    FoM = 'FisrtOfMaxima'
+    FoM = 'FirstOfMaxima'
     LoM = 'LastOfMaxima'
     MoM = 'MeanOfMaxima'
 
 
-# ======================================================================================================================
+# ==================================================================================================================== #
+#   MamdaniRule
+# -------------------------------------------------------------------------------------------------------------------- #
+#   Regra do Modelo Mamdani
+# ==================================================================================================================== #
 
 
 class MamdaniRule(object):
@@ -89,7 +94,11 @@ class MamdaniRule(object):
         return [fuzzy_rule_compute(out_height, self.__consequent.func(x=x), self.__kind) for x in universe.domain]
 
 
-# ======================================================================================================================
+# ==================================================================================================================== #
+#   MamdaniModel
+# -------------------------------------------------------------------------------------------------------------------- #
+#   Modelo Mamdani para inferencia
+# ==================================================================================================================== #
 
 
 class MamdaniModel(object):
@@ -163,8 +172,8 @@ class MamdaniModel(object):
 
     def __call__(self, *args, **kwargs):
 
-        make_plot = args[0] if len(args) > 0 else False
-
+        # Primeiro argumento: Flag/Figure para plotar o resultado
+        make_plot = args[0] if len(args) > 0 else False  # type: Union[bool, plt.Figure]
 
         # Eh necessario um valor para cada input
         if len(kwargs) != len(self.__input):
@@ -176,20 +185,23 @@ class MamdaniModel(object):
         # ---------------------------------------------------------- #
         # 1) Computar as regras a partir das entradas
 
-        n_antc = len(self.__input)
+        n_antc = len(self.__input)  # type: int
         r_rules = []
 
-        if make_plot:
-            fig = plt.figure(figsize=(8, 8))
-            axarr = fig.subplots(len(self.__rules) + 1, 2 + n_antc)
+        # Criar Axes para plotar as regras se: make_plot eh True ou eh uma figure passada
+        # Caso contrario, axarr sera None
+        axarr = (make_plot if isinstance(make_plot, plt.Figure) else plt.figure(figsize=(8, 8))).subplots(
+            len(self.__rules) + 1, 2 + n_antc) if make_plot is not False else None
 
         iter = 0
-        for rule in self.__rules:
+        for rule in self.__rules:  # type: MamdaniRule
             # Computar a regra
             r_rule = rule(**kwargs)
             r_rules.append(r_rule)
 
-            if make_plot:
+            if axarr is not None:
+                # Grafico de cada uma das regras
+
                 # Antecedente
                 iter_antc = 0
                 for key in rule.getAntecedent()._funcs:
@@ -205,6 +217,7 @@ class MamdaniModel(object):
 
                 # Consequente
                 axarr[iter, n_antc].plot(domain.points, self.__rules[iter - 1].getConsequent().gen())
+
                 # Resultado
                 axarr[iter, n_antc + 1].plot(domain.points, r_rule)
                 axarr[iter, n_antc + 1].set_ylim(0, 1)
@@ -250,7 +263,7 @@ class MamdaniModel(object):
                 sum1 += x * union[iter]
                 sum2 += union[iter]
                 iter += 1
-            return sum1/sum2 if sum2 != 0 else 0
+            return sum1 / sum2 if sum2 != 0 else 0
 
         if self.__dfzz == EnumMamdaniDfzz.BoA:
             # Bisector of Area
@@ -285,7 +298,7 @@ class MamdaniModel(object):
                 if union[iter] >= maxima:
                     points.append(x)
                 iter += 1
-            return sum(points)/len(points) if len(points) > 0 else 0
+            return sum(points) / len(points) if len(points) > 0 else 0
 
         return 0
 
