@@ -307,12 +307,12 @@ class MamdaniModel(object):
             # Mean of Maxima
             maxima = max(points)
             iter = 0
-            points = []
+            m_points = []
             for x in domain:
                 if points[iter] >= maxima:
-                    points.append(x)
+                    m_points.append(x)
                 iter += 1
-            return sum(points) / len(points) if len(points) > 0 else 0
+            return sum(m_points) / len(m_points) if len(m_points) > 0 else 0
 
         return 0
 
