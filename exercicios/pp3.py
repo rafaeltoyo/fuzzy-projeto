@@ -233,7 +233,7 @@ def model_mamdani():
             domain_x2 = np.array(x2.domain.points)
 
             prod_x1, prod_x2 = np.meshgrid(domain_x1, domain_x2)
-            domain_y = np.array([model(x1=x1, x2=x2) for (x1, x2) in zip(np.ravel(prod_x1), np.ravel(prod_x2))])
+            domain_y = np.array([model(x1=x1i, x2=x2i) for (x1i, x2i) in zip(np.ravel(prod_x1), np.ravel(prod_x2))])
             domain_y = domain_y.reshape(prod_x1.shape)
 
             fig = plt.figure()
@@ -322,7 +322,7 @@ def model_sugeno():
             domain_x2 = np.array(x2.domain.points)
 
             prod_x1, prod_x2 = np.meshgrid(domain_x1, domain_x2)
-            domain_y = np.array([model(x1=x1, x2=x2) for (x1, x2) in zip(np.ravel(prod_x1), np.ravel(prod_x2))])
+            domain_y = np.array([model(x1=x1i, x2=x2i) for (x1i, x2i) in zip(np.ravel(prod_x1), np.ravel(prod_x2))])
             domain_y = domain_y.reshape(prod_x1.shape)
 
             fig = plt.figure()

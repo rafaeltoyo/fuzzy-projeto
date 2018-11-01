@@ -8,11 +8,10 @@
 
 from exercicios.pp2parte1 import main as pp2p1
 from exercicios.pp2parte2 import main as pp2p2
-
+from exercicios.pp3 import main as pp3
 
 def main():
-    while pp2p2():
-        pass
+    pp3()
 
 if __name__ == "__main__":
     main()

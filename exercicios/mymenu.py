@@ -27,7 +27,11 @@ class Menu(object):
             count += 1
             print("[" + str(count) + "] " + opt)
         while True:
-            output = int(raw_input("R: "))
+            try:
+                output = int(raw_input("R: "))
+            except ValueError:
+                print("Valor invalido!")
+                continue
             if 1 <= output <= count:
                 break
             print("Opcao invalida!")
