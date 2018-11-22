@@ -15,8 +15,7 @@ from exercicios.mymenu import Menu
 
 from fuzzychan.base import FuzzyUniverse, MembershipFunc
 from fuzzychan.inference.mamdani import MamdaniModel, EnumMamdaniDfzz, EnumMamdaniAggr, EnumMamdaniOper, EnumMamdaniImpl
-from fuzzychan.inference.sugeno import SugenoModel, EnumSugenoDfzz, EnumSugenoAggr, EnumSugenoOper, EnumSugenoImpl, \
-    SugenoRule
+from fuzzychan.inference.sugeno import SugenoModel, EnumSugenoDfzz, EnumSugenoOper
 
 # ======================================================================================================================
 
@@ -100,7 +99,7 @@ def main2():
     sugeno.create_rule(x1='GS', x2='SM', out=27)
     sugeno.create_rule(x1='GS', x2='MM', out=41)
     sugeno.create_rule(x1='GS', x2='GM', out=60)
-    #sugeno.create_rule(x1='GS', x2='GM', out={'const'=60, 'x1'=[1 1], 'x2'=[1 1]}) # Ordem 2
+    # sugeno.create_rule(x1='GS', x2='GM', out={'const'=60, 'x1'=[1 1], 'x2'=[1 1]}) # Ordem 2
 
     out = np.array([[int(i), int(j), sugeno(x1=i, x2=j)] for i in range(0, 110, 10) for j in range(0, 110, 10)])
     np.savetxt("sugeno-pro.csv", out, fmt=['%d', '%d', '%.5f'], delimiter=";")
