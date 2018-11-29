@@ -81,6 +81,7 @@ class WangMendelClassifier(object):
                 rule.append(elem)
 
             txt = ' E '.join((elem['name'] + ' eh ' + elem['label']) for elem in rule) + ' ENTAO ' + row[out_label]
+            txt += '(' + str(self.__operation(oper, rule)) + ')'
             rules.append({
                 'antecedent': rule,
                 'consequent': row[out_label],
@@ -89,16 +90,51 @@ class WangMendelClassifier(object):
 
         print('\n'.join(str(rule['txt']) for rule in rules))
 
-        for i in range(len(rules)):
-            for j in range(i+1, len(rules)):
-                print(i, j)
-                # TODO: remover redundancia
-                # TODO: remover contradicao
+        import copy as cp
+        c_rules = cp.deepcopy(rules)
 
-        print('\n'.join(str(rule['txt']) for rule in rules))
+        for i in range(len(rules)):
+
+            if rules[i] not in c_rules:
+                continue
+
+            for j in range(i+1, len(rules)):
+
+                if rules[j] not in c_rules:
+                    continue
+
+                #print(str(rules[i]["txt"]) + " -> " + str(rules[j]["txt"]))
+
+                if min([(1 if rules[i]['antecedent'][k]['label'] == rules[j]['antecedent'][k]['label'] else 0) for k in range(len(rules[i]['antecedent']))]) == 1:
+
+                    mship_i = self.__operation(oper, rules[i]['antecedent'])
+                    mship_j = self.__operation(oper, rules[j]['antecedent'])
+
+                    # Remover redundancias e contradicoes -> sempre que o antecedente for igual, havera um dos casos
+                    if mship_i > mship_j:
+                        c_rules.remove(rules[j])
+                        continue
+                    else:
+                        c_rules.remove(rules[i])
+                        break
+
+        print('-' * 80)
+        print('\n'.join(str(rule['txt']) for rule in c_rules))
 
         return rules
 
+    def __operation(self, oper, rule):
+
+        import numpy as np
+        from fuzzychan.relation import EnumRelation
+
+        elems = [elem['mship'] for elem in rule]
+
+        if oper == EnumRelation.Min:
+            return min(elems)
+        elif oper == EnumRelation.Prod:
+            return np.prod(elems)
+        return 0
 
 
 # ======================================================================================================================
