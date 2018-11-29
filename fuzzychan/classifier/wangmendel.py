@@ -1,8 +1,8 @@
 # ======================================================================================================================
-#   Modelo Mamdani de inferencia Fuzzy
+#   Modelo Wang Mendel de classificacoa Fuzzy
 # ----------------------------------------------------------------------------------------------------------------------
 #   Autor: Rafael Hideo Toyomoto
-#   07/10/2018
+#   28/11/2018
 # ======================================================================================================================
 
 
@@ -46,6 +46,7 @@ class WangMendelClassifier(object):
             self.__input[var] = kwargs[var]
 
     def __call__(self, *args, **kwargs):
+        # TODO: classificar entrada baseado no treinamento
         pass
 
     def train(self, data, out_label='cls', oper=EnumRelation.Min):
@@ -91,13 +92,12 @@ class WangMendelClassifier(object):
         for i in range(len(rules)):
             for j in range(i+1, len(rules)):
                 print(i, j)
+                # TODO: remover redundancia
+                # TODO: remover contradicao
 
         print('\n'.join(str(rule['txt']) for rule in rules))
 
         return rules
-
-    def __extract(self):
-        pass
 
 
 
