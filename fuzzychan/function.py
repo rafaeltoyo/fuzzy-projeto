@@ -9,6 +9,8 @@
 #   Classe que representa funcoes de pertinencia (fuzzy)
 # ==================================================================================================================== #
 
+from matplotlib.pyplot import Figure
+
 
 class MembershipFunc(object):
 
@@ -149,5 +151,6 @@ class MembershipFunc(object):
             return 0
         # Grau de inclusao (normalizada)
         return (card - outer) / card
+
 
 # ==================================================================================================================== #

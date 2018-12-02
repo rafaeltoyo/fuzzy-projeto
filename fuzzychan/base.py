@@ -35,6 +35,7 @@ class Domain(object):
         """
         self.id = label + "-" + str(xi) + "-" + str(xf) + "-" + str(sample)
         self.points = linspace(float(xi), float(xf), int(sample))
+        self.limits = (float(xi), float(xf))
 
     def __eq__(self, other):
         if isinstance(other, Domain):
