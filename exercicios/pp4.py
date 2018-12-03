@@ -21,47 +21,13 @@ from fuzzychan.classifier.wangmendel import WangMendelClassifier
 
 from exercicios.pp4_dataset_gen import DatasetGenerator
 
+from genetic.base.algorithm import Algorithm as GaAlgorithm
+from genetic.base.population import Population as GaPopulation
+from genetic.base.chromosome import Chromosome
+from genetic.base.gene import Gene
+
+
 # ======================================================================================================================
-
-
-def test_dataframe(filename='train.csv',ndim=2, ncls=3, minelem=10, maxelem=50, spreadv=30, minv=0, maxv=100):
-    # Gerar o arquivo
-    with open(str(filename), 'w+') as csvfile:
-
-        dim = []
-
-        writer = csv.writer(csvfile)
-
-        for i in range(ndim):
-            dim.append("x{}".format(i+1))
-
-        dim.append('cls')
-        writer.writerow(dim)
-        dim.remove('cls')
-
-        # Para cada classe ...
-        for i in range(ncls):
-            # Centroide da classe
-            centroid = {}
-            for label in dim:
-                centroid[label] = random.uniform(minv, maxv)
-
-
-            # Para cada elemento novo ...
-            for j in range(random.randrange(minelem, maxelem)):
-
-                data = {}
-                for label in dim:
-                    data[label] = (centroid[label] + spreadv * random.random())
-                    while data[label] < minv or data[label] > maxv:
-                        if data[label] < minv:
-                            data[label] = minv + (minv - data[label])
-                        if data[label] > maxv:
-                            data[label] = maxv - (data[label] - maxv)
-
-                v = [data[label] for label in data]
-                v.append('C' + str(i+1))
-                writer.writerow(v)
 
 
 def func1(sample):
@@ -82,7 +48,27 @@ def func2(sample):
 
 def main():
     """
-    Main
+    Teste AG + Fuzzy
+    :return:
+    """
+
+    def fitness_function(chromosome):
+        """
+        ::param chromosome:
+        :type chromosome: Chromosome
+        """
+        error = 0
+        for gene in chromosome.genes:
+            error += abs(50 - gene.value())
+        return error
+
+    ga = GaAlgorithm(GaPopulation(Chromosome(fitness_function, Gene(0, 100), Gene(0, 100), Gene(0, 100)), 10))
+    ga.run(debug=True)
+
+
+def main2():
+    """
+    Teste WangMendel
     :return:
     """
 
@@ -96,13 +82,13 @@ def main():
     """ Gerar/Abrir arquivo input de treino """
     filename = "train6.csv"
 
-    #dg = DatasetGenerator("cls", x1=x1, x2=x2)
-    #dg.add_group(name="C1", nelem=70, spread=0.47)
-    #dg.add_group(name="C2", nelem=40, spread=0.35)
-    #dg.add_group(name="C3", nelem=100, spread=0.6)
-    #dg.generate(filename)
+    # dg = DatasetGenerator("cls", x1=x1, x2=x2)
+    # dg.add_group(name="C1", nelem=70, spread=0.47)
+    # dg.add_group(name="C2", nelem=40, spread=0.35)
+    # dg.add_group(name="C3", nelem=100, spread=0.6)
+    # dg.generate(filename)
 
-    #test_dataframe(filename='dataset/train1.csv', ncls=5, spreadv=40)
+    # test_dataframe(filename='dataset/train1.csv', ncls=5, spreadv=40)
     df = pd.read_csv("dataset/" + filename)
 
     """ Gerar figura para visualizar os dados """
