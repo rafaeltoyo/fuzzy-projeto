@@ -110,7 +110,7 @@ class WangMendelClassifier(object):
 
         # Contagem para status
         num_rules = len(rules)
-        num_miss = 0
+
 
         # Percorrer a base de regra antiga
         for i in range(len(rules)):
@@ -134,10 +134,6 @@ class WangMendelClassifier(object):
                     # Em resumo, nos dois casos remove-se a regra de menor grau de ativacao
                     """ BEGIN: REMOCAO DE ITENS """
 
-                    # Contabilizar estatisticas
-                    # Contar erro caso o consequente das regras forem diferentes
-                    num_miss += 1 if rules[i]['consequent'] != rules[j]['consequent'] else 0
-
                     # Calcular o grau de ativacao de cada regra para decidir qual eh mais relevante
                     mship_i = WangMendelClassifier.__operation(oper, rules[i]['antecedent'])
                     mship_j = WangMendelClassifier.__operation(oper, rules[j]['antecedent'])
@@ -154,8 +150,6 @@ class WangMendelClassifier(object):
                         break
 
                     """ END: REMOCAO DE ITENS """
-        self.__status["accuracy"] = float(num_rules - num_miss) / num_rules
-        self.__status["train_size"] = num_rules
 
         """ Construir estrutura de inteferencia """
         rules = []
@@ -169,14 +163,29 @@ class WangMendelClassifier(object):
                 'consequent': prerule["consequent"],
                 'txt': prerule['txt']
             })
+        # Atualizar a base de regras desse classificador
+        self.__rulebase = rules
+
+        """ Calcular a acuracia do modelo """
+        # Contabilizar os erros
+        num_miss = 0
+        for row in data:
+            # Classificar
+            r = self(**row)
+            # Label diferente?
+            if r["label"] != row[out_label]:
+                # Contar erro
+                num_miss += 1
+
+        self.__status["accuracy"] = float(num_rules - num_miss) / num_rules
+        self.__status["train_size"] = num_rules
 
         """ Debug apenas, visualizar as regras definitivas (apos a reducao) """
         if debug:
             print('-' * 80)
             print('\n'.join(str(rule['txt']) for rule in c_rules))
+            self.print_status()
 
-        # Atualizar a base de regras desse classificador
-        self.__rulebase = rules
         return rules
 
     # ==================================================================================================================

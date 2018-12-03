@@ -37,7 +37,7 @@ class Chromosome(object):
         return c
 
     def __str__(self):
-        return '(' + ", ".join([str(gene) for gene in self.genes]) + (") fitness=%.2f" % self.__fitness)
+        return ("fitness=%.2f (" % self.__fitness) + ", ".join([str(gene) for gene in self.genes]) + ')'
 
     def fitness(self, force=False):
         if self.__fitness is None or force:

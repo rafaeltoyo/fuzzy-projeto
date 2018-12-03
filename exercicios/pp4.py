@@ -53,7 +53,7 @@ def main():
     """
 
     sample = 1000
-    df = pd.read_csv("dataset/train6.csv")
+    df = pd.read_csv("dataset/train1.csv")
 
     def fitness_function(chromosome):
         """
@@ -98,23 +98,29 @@ def main():
     genes2[1], genes2[2] = genes2[2], genes2[1]
     genes2[4], genes2[5] = genes2[5], genes2[4]
 
-    pop = GaPopulation(Chromosome(fitness_function, *(genes1 + genes2)), 20)
-    ga = GaAlgorithm(pop, maxgen=200, mutation=0.2)
+    pop = GaPopulation(Chromosome(fitness_function, *(genes1 + genes2)), 50)
+    ga = GaAlgorithm(pop, maxgen=100, mutation=0.1)
     ga.run(debug=True)
     best = pop.best()
     gs = best.genes
 
+    x1, x2 = generate_universes(gs, sample)
+
     fig = plt.figure()
     axes = fig.add_subplot(111)
+    axes.set_xbound(x1.domain.limits)
+    axes.set_ybound(x2.domain.limits)
     seaborn.scatterplot('x1', 'x2', hue='cls', data=df, ax=axes)
 
-    x1, x2 = generate_universes(gs, sample)
     x1.plot()
     x2.plot()
 
-    plt.show()
-
+    print('-' * 80)
     print(str(best))
+    wmcls = WangMendelClassifier(x1=x1, x2=x2)
+    wmcls.train(df.to_dict('records'), out_label='cls', debug=True)
+
+    plt.show()
 
 
 def generate_universes(gs, sample):
@@ -197,8 +203,6 @@ def main2():
     # Gerar modelo
     wmcls = WangMendelClassifier(x1=x1, x2=x2)
     wmcls.train(df.to_dict('records'), out_label='cls', debug=True)
-
-    wmcls.print_status()
 
     plt.show()
 
