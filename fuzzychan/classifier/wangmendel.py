@@ -34,14 +34,17 @@ class WangMendelClassifier(object):
             self.__input[var] = kwargs[var]
 
     def __reset_status(self):
-        self.__status['accuracy'] = 0
-        self.__status['train_size'] = 0
+        self.__status["accuracy"] = 0
+        self.__status["train_size"] = 0
 
     def print_status(self):
         print('-' * 80)
         print("Accuracy: %.2f%c" % (float(self.__status['accuracy'] * 100), '%'))
         print("Train samples: %d" % (self.__status['train_size']))
         print("Rule-base size: %d" % (len(self.__rulebase)))
+
+    def get_fitness(self):
+        return float(self.__status["accuracy"])
 
     def __call__(self, *args, **kwargs):
         result = []

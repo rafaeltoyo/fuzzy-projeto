@@ -53,32 +53,82 @@ def main():
     """
 
     sample = 1000
+    df = pd.read_csv("dataset/train6.csv")
 
     def fitness_function(chromosome):
         """
         ::param chromosome:
         :type chromosome: Chromosome
         """
-        global sample
 
-        error = 0
-        for gene in chromosome.genes:
-            error += 100 - abs(50 - gene.value())
-        return error
+        gs = chromosome.genes
 
-    ga = GaAlgorithm(
-        GaPopulation(
-            Chromosome(
-                fitness_function,
-                Gene(0, 100),
-                Gene(0, 100),
-                Gene(0, 100)
-            ),
-            20
-        ),
-        maxgen=1000
-    )
+        if len(gs) != 14:
+            return 0
+
+        if not (0 <= gs[0].value() < gs[1].value()) or not (gs[1].value() > gs[2].value()):
+            return 0
+        if not (gs[2].value() < gs[3].value() < gs[4].value()) or not (gs[4].value() > gs[5].value()):
+            return 0
+        if not (gs[5].value() < gs[6].value() <= 100):
+            return 0
+
+        if not (0 < gs[7].value() < gs[8].value()) or not (gs[8].value() > gs[9].value()):
+            return 0
+        if not (gs[9].value() < gs[10].value() < gs[11].value()) or not (gs[11].value() > gs[12].value()):
+            return 0
+        if not (gs[12].value() < gs[13].value() <= 100):
+            return 0
+
+        x1, x2 = generate_universes(gs, sample)
+
+        wmcls = WangMendelClassifier(x1=x1, x2=x2)
+        wmcls.train(df.to_dict('records'), out_label='cls', debug=False)
+        return wmcls.get_fitness() * 100
+
+    n_genes1 = [random.uniform(0, 100) for i in range(0, 7)]
+    n_genes1.sort()
+    genes1 = [Gene(0, 100, n) for n in n_genes1]
+    genes1[1], genes1[2] = genes1[2], genes1[1]
+    genes1[4], genes1[5] = genes1[5], genes1[4]
+
+    n_genes2 = [random.uniform(0, 100) for i in range(0, 7)]
+    n_genes2.sort()
+    genes2 = [Gene(0, 100, n) for n in n_genes2]
+    genes2[1], genes2[2] = genes2[2], genes2[1]
+    genes2[4], genes2[5] = genes2[5], genes2[4]
+
+    pop = GaPopulation(Chromosome(fitness_function, *(genes1 + genes2)), 20)
+    ga = GaAlgorithm(pop, maxgen=200, mutation=0.2)
     ga.run(debug=True)
+    best = pop.best()
+    gs = best.genes
+
+    fig = plt.figure()
+    axes = fig.add_subplot(111)
+    seaborn.scatterplot('x1', 'x2', hue='cls', data=df, ax=axes)
+
+    x1, x2 = generate_universes(gs, sample)
+    x1.plot()
+    x2.plot()
+
+    plt.show()
+
+    print(str(best))
+
+
+def generate_universes(gs, sample):
+    x1 = FuzzyUniverse("Attr1", 0, 100, sample)
+    x1["A1"] = MembershipFunc(0, gs[0].value(), gs[1].value())
+    x1["A2"] = MembershipFunc(gs[2].value(), gs[3].value(), gs[4].value())
+    x1["A3"] = MembershipFunc(gs[5].value(), gs[6].value(), 100)
+
+    x2 = FuzzyUniverse("Attr2", 0, 100, sample)
+    x2["B1"] = MembershipFunc(0, gs[7].value(), gs[8].value())
+    x2["B2"] = MembershipFunc(gs[9].value(), gs[10].value(), gs[11].value())
+    x2["B3"] = MembershipFunc(gs[12].value(), gs[13].value(), 100)
+
+    return x1, x2
 
 
 def main2():

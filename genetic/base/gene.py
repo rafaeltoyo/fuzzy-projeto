@@ -38,7 +38,8 @@ class Gene(object):
         return self
 
     def shuffle(self):
-        self.__value = random.uniform(self.__min, self.__max)
+        #self.__value = random.uniform(self.__min, self.__max)
+        self.__value = min(max(self.__value * (0.8 + random.uniform(0, 0.4)), self.__min), self.__max)
         return self
 
     def value(self):
