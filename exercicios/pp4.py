@@ -52,17 +52,32 @@ def main():
     :return:
     """
 
+    sample = 1000
+
     def fitness_function(chromosome):
         """
         ::param chromosome:
         :type chromosome: Chromosome
         """
+        global sample
+
         error = 0
         for gene in chromosome.genes:
-            error += abs(50 - gene.value())
+            error += 100 - abs(50 - gene.value())
         return error
 
-    ga = GaAlgorithm(GaPopulation(Chromosome(fitness_function, Gene(0, 100), Gene(0, 100), Gene(0, 100)), 10))
+    ga = GaAlgorithm(
+        GaPopulation(
+            Chromosome(
+                fitness_function,
+                Gene(0, 100),
+                Gene(0, 100),
+                Gene(0, 100)
+            ),
+            20
+        ),
+        maxgen=1000
+    )
     ga.run(debug=True)
 
 
