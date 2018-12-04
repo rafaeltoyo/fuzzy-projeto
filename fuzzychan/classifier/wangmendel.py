@@ -38,10 +38,15 @@ class WangMendelClassifier(object):
         self.__status["train_size"] = 0
 
     def print_status(self):
+        print('=' * 80)
+        print("WangMendel Classifier")
+        print("\tTrain samples: %d" % (self.__status['train_size']))
+        print("\tRule Base [size=%d]:" % (len(self.__rulebase)))
+        print('-' * 80)
+        print('\n'.join(str(rule['txt']) for rule in self.__rulebase))
         print('-' * 80)
         print("Accuracy: %.2f%c" % (float(self.__status['accuracy'] * 100), '%'))
-        print("Train samples: %d" % (self.__status['train_size']))
-        print("Rule-base size: %d" % (len(self.__rulebase)))
+        print('=' * 80)
 
     def get_fitness(self):
         return float(self.__status["accuracy"])
@@ -182,8 +187,6 @@ class WangMendelClassifier(object):
 
         """ Debug apenas, visualizar as regras definitivas (apos a reducao) """
         if debug:
-            print('-' * 80)
-            print('\n'.join(str(rule['txt']) for rule in c_rules))
             self.print_status()
 
         return rules

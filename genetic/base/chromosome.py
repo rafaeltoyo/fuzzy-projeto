@@ -9,6 +9,7 @@
 import copy
 from genetic.base.gene import Gene
 
+
 # ======================================================================================================================
 
 
@@ -37,7 +38,8 @@ class Chromosome(object):
         return c
 
     def __str__(self):
-        return ("fitness=%.2f (" % self.__fitness) + ", ".join([str(gene) for gene in self.genes]) + ')'
+        return ("fitness=%.2f (" % float(0.0 if self.__fitness is None else self.__fitness)) + ", ".join(
+            [str(gene) for gene in self.genes]) + ')'
 
     def fitness(self, force=False):
         if self.__fitness is None or force:

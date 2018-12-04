@@ -6,6 +6,7 @@
 # ======================================================================================================================
 
 
+import time
 from genetic.base.crossover import Crossover
 from genetic.base.population import Population
 
@@ -27,24 +28,26 @@ class Algorithm(object):
 
         self.__generation = 0
         self.__maxgen = maxgen
+        self.__stagnant = 0
 
         self.__mutation = mutation
 
     def run(self, debug=False):
+        init_time = time.time()
+
+        if debug:
+            print('=' * 80)
+            print("Initializing GA")
 
         # Primeira avaliacao
         self.__population.eval()
 
         if debug:
-            print('=' * 80)
-            print("Initializing GA")
+            print("time: %.3fs" % float(time.time() - init_time))
             print(str(self.__population))
 
         while not self.stop():
-            if debug:
-                print('-' * 80)
-                print("Generation: %d" % self.__generation)
-                print(str(self.__population))
+            run_time = time.time()
 
             # Reproduzir
             children = self.__population.children(n=1.0)
@@ -61,9 +64,21 @@ class Algorithm(object):
             # Contar uma nova geracao
             self.__generation += 1
 
+            if debug:
+                print('-' * 80)
+                print("Generation: %d (time: %.3fs)" % (self.__generation, float(time.time() - run_time)))
+                print(str(self.__population))
+
         return self.__population.best()
 
     def stop(self):
+        if max(self.__population.elements(), key=lambda x: x.fitness()) == min(self.__population.elements(), key=lambda x: x.fitness()):
+            if self.__stagnant == 10:
+                return True
+            else:
+                self.__stagnant += 1
+        else:
+            self.__stagnant = 0
         return self.__generation >= self.__maxgen
 
 # ======================================================================================================================

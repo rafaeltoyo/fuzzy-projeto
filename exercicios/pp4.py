@@ -11,6 +11,7 @@ import csv
 import random
 import pandas as pd
 import seaborn
+import time
 
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -51,10 +52,21 @@ def main():
     Teste AG + Fuzzy
     :return:
     """
-
+    exectime = {
+        'all': {},
+        'file': {},
+        'ga': {},
+        'wm': {}
+    }
     sample = 1000
-    df = pd.read_csv("dataset/train1.csv")
+    exectime["all"]["start"] = time.time()
 
+    """ Opening train data file """
+    exectime["file"]["start"] = time.time()
+    df = pd.read_csv("dataset/train4.csv")
+    exectime["file"]["end"] = time.time()
+
+    """ Implemetation of fitness function to GA """
     def fitness_function(chromosome):
         """
         ::param chromosome:
@@ -72,12 +84,16 @@ def main():
             return 0
         if not (gs[5].value() < gs[6].value() <= 100):
             return 0
+        if not (gs[0].value() < gs[3].value() < gs[6].value()):
+            return 0
 
         if not (0 < gs[7].value() < gs[8].value()) or not (gs[8].value() > gs[9].value()):
             return 0
         if not (gs[9].value() < gs[10].value() < gs[11].value()) or not (gs[11].value() > gs[12].value()):
             return 0
         if not (gs[12].value() < gs[13].value() <= 100):
+            return 0
+        if not (gs[7].value() < gs[10].value() < gs[13].value()):
             return 0
 
         x1, x2 = generate_universes(gs, sample)
@@ -86,41 +102,58 @@ def main():
         wmcls.train(df.to_dict('records'), out_label='cls', debug=False)
         return wmcls.get_fitness() * 100
 
+    """ Creating first universe """
     n_genes1 = [random.uniform(0, 100) for i in range(0, 7)]
     n_genes1.sort()
     genes1 = [Gene(0, 100, n) for n in n_genes1]
     genes1[1], genes1[2] = genes1[2], genes1[1]
     genes1[4], genes1[5] = genes1[5], genes1[4]
 
+    """ Creating second universe """
     n_genes2 = [random.uniform(0, 100) for i in range(0, 7)]
     n_genes2.sort()
     genes2 = [Gene(0, 100, n) for n in n_genes2]
     genes2[1], genes2[2] = genes2[2], genes2[1]
     genes2[4], genes2[5] = genes2[5], genes2[4]
 
+    """ Genetic Algorithm Tuning """
+    exectime["ga"]["start"] = time.time()
     pop = GaPopulation(Chromosome(fitness_function, *(genes1 + genes2)), 50)
-    ga = GaAlgorithm(pop, maxgen=100, mutation=0.1)
+    ga = GaAlgorithm(pop, maxgen=100, mutation=0.15)
     ga.run(debug=True)
+    exectime["ga"]["end"] = time.time()
+
     best = pop.best()
     gs = best.genes
+    print('-' * 80)
+    print(str(best))
 
+    """ WangMendel Classifier to show results """
+    exectime["wm"]["start"] = time.time()
     x1, x2 = generate_universes(gs, sample)
+    wmcls = WangMendelClassifier(x1=x1, x2=x2)
+    wmcls.train(df.to_dict('records'), out_label='cls', debug=False)
+    wmcls.print_status()
+    exectime["wm"]["end"] = time.time()
 
+    """ Ploting results """
     fig = plt.figure()
     axes = fig.add_subplot(111)
     axes.set_xbound(x1.domain.limits)
     axes.set_ybound(x2.domain.limits)
     seaborn.scatterplot('x1', 'x2', hue='cls', data=df, ax=axes)
-
     x1.plot()
     x2.plot()
-
-    print('-' * 80)
-    print(str(best))
-    wmcls = WangMendelClassifier(x1=x1, x2=x2)
-    wmcls.train(df.to_dict('records'), out_label='cls', debug=True)
-
     plt.show()
+
+    exectime["all"]["end"] = time.time()
+
+    """ Printing timers """
+    print('=' * 80)
+    for label in exectime:
+        print("%s time: \t%.3fs" % (label, float(exectime[label]["end"] - exectime[label]["start"])))
+    print('=' * 80)
+
 
 
 def generate_universes(gs, sample):
