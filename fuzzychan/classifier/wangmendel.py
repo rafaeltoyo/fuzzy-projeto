@@ -35,6 +35,7 @@ class WangMendelClassifier(object):
 
     def __reset_status(self):
         self.__status["accuracy"] = 0
+        self.__status["p_accuracy"] = 0
         self.__status["train_size"] = 0
 
     def print_status(self):
@@ -46,6 +47,7 @@ class WangMendelClassifier(object):
         print('\n'.join(str(rule['txt']) for rule in self.__rulebase))
         print('-' * 80)
         print("Accuracy: %.2f%c" % (float(self.__status['accuracy'] * 100), '%'))
+        print("Pert Accuracy: %.2f%c" % (float(self.__status['p_accuracy'] * 100), '%'))
         print('=' * 80)
 
     def get_fitness(self):
@@ -174,15 +176,19 @@ class WangMendelClassifier(object):
         """ Calcular a acuracia do modelo """
         # Contabilizar os erros
         num_miss = 0
+        num_pert = 0
         for row in data:
             # Classificar
-            r = self(**row)
+            r_all = self("complete", **row)
+            r = max(r_all, key=lambda (x): x["value"])
             # Label diferente?
             if r["label"] != row[out_label]:
                 # Contar erro
                 num_miss += 1
+                num_pert += 1 - max([(ri["value"] if ri["label"] == row[out_label] else 0) for ri in r_all])
 
         self.__status["accuracy"] = float(num_rules - num_miss) / num_rules
+        self.__status["p_accuracy"] = float(num_rules - num_pert) / num_rules
         self.__status["train_size"] = num_rules
 
         """ Debug apenas, visualizar as regras definitivas (apos a reducao) """

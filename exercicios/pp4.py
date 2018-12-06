@@ -52,6 +52,7 @@ def main():
     Teste AG + Fuzzy
     :return:
     """
+
     exectime = {
         'all': {},
         'file': {},
@@ -63,9 +64,10 @@ def main():
 
     """ Opening train data file """
     exectime["file"]["start"] = time.time()
-    df = pd.read_csv("dataset/train4.csv")
+    df = pd.read_csv("dataset/train1.csv")
     exectime["file"]["end"] = time.time()
-
+    print df['x1'].size
+    return
     """ Implemetation of fitness function to GA """
     def fitness_function(chromosome):
         """
@@ -139,11 +141,51 @@ def main():
     """ Ploting results """
     fig = plt.figure()
     axes = fig.add_subplot(111)
+
     axes.set_xbound(x1.domain.limits)
     axes.set_ybound(x2.domain.limits)
     seaborn.scatterplot('x1', 'x2', hue='cls', data=df, ax=axes)
+
+    gs0 = [gs[0].value(), gs[0].value()]
+    gs1 = [gs[1].value(), gs[1].value()]
+    gs2 = [gs[2].value(), gs[2].value()]
+    gs3 = [gs[3].value(), gs[3].value()]
+    gs4 = [gs[4].value(), gs[4].value()]
+    gs5 = [gs[5].value(), gs[5].value()]
+    gs6 = [gs[6].value(), gs[6].value()]
+    gs7 = [gs[7].value(), gs[7].value()]
+    gs8 = [gs[8].value(), gs[8].value()]
+    gs9 = [gs[9].value(), gs[9].value()]
+    gs10 = [gs[10].value(), gs[10].value()]
+    gs11 = [gs[11].value(), gs[11].value()]
+    gs12 = [gs[12].value(), gs[12].value()]
+    gs13 = [gs[13].value(), gs[13].value()]
+    interval = [0, 100]
+
+    # X1/A1
+    plt.plot([0, 0], interval, gs1, interval, color="blue")
+    axes.fill_between([0, gs[1].value()], [0, 0], [100, 100], facecolor='blue', alpha=0.2, interpolate=True)
+    # X1/A2
+    plt.plot(gs2, interval, gs4, interval, color="red")
+    axes.fill_between([gs[2].value(), gs[4].value()], [0, 0], [100, 100], facecolor='red', alpha=0.2, interpolate=True)
+    # X1/A3
+    plt.plot(gs5, interval, [100, 100], interval, color="green")
+    axes.fill_between([gs[5].value(), 100], [0, 0], [100, 100], facecolor='green', alpha=0.2, interpolate=True)
+
+    # X1/A1
+    plt.plot(interval, [0, 0], interval, gs8, color="blue")
+    axes.fill_between(interval, [0, 0], gs8, where=gs8 >= [0, 0], facecolor='blue', alpha=0.2, interpolate=True)
+    # X1/A2
+    plt.plot(interval, gs9, interval, gs11, color="red")
+    axes.fill_between(interval, gs9, gs11, where=gs11 >= gs9, facecolor='red', alpha=0.2, interpolate=True)
+    # X1/A3
+    plt.plot(interval, gs12, interval, [100, 100], color="green")
+    axes.fill_between(interval, gs12, [100, 100], where=[100, 100] >= gs12, facecolor='green', alpha=0.2, interpolate=True)
+
     x1.plot()
+
     x2.plot()
+
     plt.show()
 
     exectime["all"]["end"] = time.time()

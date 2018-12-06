@@ -73,7 +73,7 @@ class Algorithm(object):
 
     def stop(self):
         if max(self.__population.elements(), key=lambda x: x.fitness()) == min(self.__population.elements(), key=lambda x: x.fitness()):
-            if self.__stagnant == 10:
+            if self.__stagnant == self.__maxgen/4:
                 return True
             else:
                 self.__stagnant += 1
